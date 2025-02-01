@@ -1,5 +1,7 @@
 # Проектная работа "Веб-ларек"
 
+Ссылка на GitHub ``` https://github.com/Anton-Emelyanov/web-larek-frontend.git ```
+
 Стек: HTML, SCSS, TS, Webpack
 
 Структура проекта:
@@ -42,7 +44,9 @@ yarn build
 ```
 
 # Описание проекта
-В проекте реализуется MVC (Model-View-Controller) архитектура с применением паттерна проектирования "Наблюдатель" (Observer). С помощью брокера событий обеспечивается связь между моделью и представлением. Это архитектурный паттерн, используемый для разделения приложения на три ключевые компоненты, что улучшает структуру и поддерживаемость кода.
+В проекте реализуется MVC (Model-View-Controller) архитектура с применением паттерна проектирования "Наблюдатель" (Observer). 
+С помощью брокера событий обеспечивается связь между моделью и представлением. Это архитектурный паттерн, 
+используемый для разделения приложения на три ключевые компоненты, что улучшает структуру и поддерживаемость кода.
 
 ## Описание данных
 
@@ -50,33 +54,33 @@ yarn build
 
 Описывает ответ сервера, содержащий данные о товаре:
 
-- id — уникальный идентификатор товара
-- description — описание товара
-- image — путь до изображения товара
-- title — название товара
-- category — название категории товара
-- price — цена товара
+- id: string — уникальный идентификатор товара
+- description: string — описание товара
+- image: string — путь до изображения товара
+- title: string — название товара
+- category: string — название категории товара
+- price: number | null — цена товара
 
 ### Интерфейс IBasket
 
 Описывает содержание корзины:
 
-- items — товары, добавленные в корзину
-- total — стоимость всех товаров, добавленных в корзину
+- items: IProduct[] — товары, добавленные в корзину
+- total: number | null — стоимость всех товаров, добавленных в корзину
 
 ### Интерфейс IDetails
 
 Описывает информацию о заказе:
 
-- payment — способ оплаты
-- address — адрес доставки
+- payment: string — способ оплаты
+- address: string — адрес доставки
 
 ### Интерфейс IContacts
 
 Описывает информацию контакты пользователя:
 
-- email — электронная почта
-- phone — номер телефона
+- email: string — электронная почта
+- phone: string — номер телефона
 
 ### Интерфейс IOrder
 
@@ -86,15 +90,15 @@ yarn build
 
 Описывает ответ сервера с данными о заказе:
 
-- id — уникальный идентификатор заказа
-- total — стоимость заказа
+- id: string — уникальный идентификатор заказа
+- total: number | null — стоимость заказа
 
 ### Интерфейс IProductListResponse
 
 Описывает ответ сервера с данными о списке товаров:
 
-- total — общее количество товаров
-- items — список товаров
+- total: number — общее количество товаров
+- items: IProduct[] — список товаров
 
 ### Интерфейс IShopAPI
 
@@ -108,7 +112,17 @@ yarn build
 ## Модели данных
 ### Класс AppState:
 
-Обрабатывает текущее состояние приложения, реализует Интерфейс IAppState. В конструктор класс принимает объект типа IEvents для отправки изменений в брокер событий.
+Обрабатывает текущее состояние приложения, реализует Интерфейс IAppState. 
+
+Конструктор: 
+Конструктор принимает объект типа IEvents для отправки изменений в брокер событий.
+```
+interface IEvents {
+    on<T extends object>(event: EventName, callback: (data: T) => void): void;
+    emit<T extends object>(event: string, data?: T): void;
+    trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
+}
+```
 
 Поля:
 
@@ -146,7 +160,36 @@ yarn build
 ## Контролер
 ### Класс Controller:
 
-Используется для обработки данных приходящих из представления и взаимодействия с моделью. Конструктор принимает в себя объект типа IAppState и объект типа IShopAPI. Также конструктор вызывает loadProductList() для создания первичного состояния приложения (списка товаров).
+Используется для обработки данных приходящих из представления и взаимодействия с моделью. 
+
+Конструктор:
+Конструктор принимает объект типа IAppState и объект типа IShopAPI. 
+Также конструктор вызывает loadProductList() для создания первичного состояния приложения (списка товаров).
+
+```
+interface IAppState {
+	updateProductList(productList: IProduct[]): void;
+	updateSelectedProduct(selectedProduct: IProduct): void;
+	updateBasket(basket: IBasket): void;
+	updateContacts(contacts: IContacts): void;
+	updateDetails(details: IDetails): void;
+	updateOpenedModal(modal: AppStateModal): void;
+	updateContactsError(contactError: string): void;
+	updateDetailsError(detailsError: string): void;
+	updateOrderResponse(orderResponse: IOrderResponse): void;
+	getBasketCounter(): number;
+	getOrder(): IOrder;
+	getProductList(): IProduct[];
+	getBasket(): IBasket;
+}
+```
+```
+interface IShopAPI {
+	getProductList(): Promise<IProductListResponse>;
+	getProduct(id: string): Promise<IProduct>;
+	createOrder(order: IOrder): Promise<IOrderResponse>;
+}
+```
 
 Поля:
 
@@ -171,7 +214,10 @@ yarn build
 ## API
 ### Класс ShopAPI:
 
-Используется для взаимодействия с API сервера. Расширяет класс Api и реализует интерфейс IShopAPI. Конструктор, как и у родителя, принимает два аргумента: baseUrl: string и options: RequestInit.
+Используется для взаимодействия с API сервера. Расширяет класс Api и реализует интерфейс IShopAPI. 
+
+Конструктор:
+Конструктор, как и у родителя, принимает два аргумента: baseUrl: string и options: RequestInit.
 
 Поля:
 
@@ -188,7 +234,35 @@ yarn build
 
 ### Класс View<T>:
 
-Абстрактный класс реализующий интерфейс IView<T>. В конструкторе принимает объект типа IEvents и IController. Это общий класс от которого наследуются все представления.
+Абстрактный класс реализующий интерфейс IView<T>. 
+
+Конструктор:
+В конструкторе принимает объект типа IEvents и IController. Это общий класс от которого наследуются все представления.
+
+```
+interface IEvents {
+    on<T extends object>(event: EventName, callback: (data: T) => void): void;
+    emit<T extends object>(event: string, data?: T): void;
+    trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
+}
+```
+```
+interface IController {
+	loadProductList(): Promise<void>;
+	createOrder(): Promise<void>;
+
+	selectProduct(id: string): void;
+	addProduct(id: string): void;
+	removeProduct(id: string): void;
+	fillContacts(contacts: Partial<IContacts>): void;
+	fillDetails(details: Partial<IDetails>): void;
+	clearBasket(): void;
+	validateContacts(contacts: Partial<IContacts>): boolean;
+	validateDetails(details: Partial<IDetails>): boolean;
+
+	setModal(modal: AppStateModal): void;
+}
+```
 
 Поля:
 
@@ -202,7 +276,10 @@ yarn build
 
 ### Класс ModalView<T>:
 
-Абстрактный класс наследующий View<T> и реализующий интерфейс IModalView. Конструктор и поля аналогичны родительскому View<T>. Общий класс, от которого наследуются все модальные окна.
+Абстрактный класс наследующий View<T> и реализующий интерфейс IModalView. 
+
+Конструткор:
+Конструктор и поля аналогичны родительскому View<T>. Общий класс, от которого наследуются все модальные окна.
 
 Методы:
 
@@ -211,27 +288,48 @@ yarn build
 
 ### Класс ProductListView:
 
-Класс, наследующий View<IProduct[]>. Конструктор помимо родительских принимает поле isCompact: boolean. Класс отвечает за отображение списка товаров.
+Класс, наследующий View<IProduct[]>. Класс отвечает за отображение списка товаров.
+
+Конструктор:
+Конструктор помимо родительских принимает поле isCompact: boolean.
 
 Поля:
 
 - ```_isCompact: boolean``` — флаг переключающее компактное и полное отображение карточек товара
 
+Методы:
+- ```render(data?: IProduct[]): void``` - Отвечает за отображение списка товаров
+
 ### Класс ProductView:
 
-Класс, наследующий View<IProduct>. Конструктор помимо родительских принимает поле isCompact: boolean. Класс отвечает за отображение карточки товара.
+Класс, наследующий View<IProduct>. Класс отвечает за отображение карточки товара.
+
+Конструктор:
+Конструктор помимо родительских принимает поле isCompact: boolean.
 
 Поля:
 
 - ```_isCompact: boolean``` — флаг переключающее компактное и полное отображение карточки товара
 
+Методы:
+- ```render(data?: Partial<IProduct & { index: number }>): void``` - Отвечает за отображение карточки товара
+
 ### Класс BasketCounterView:
 
-Класс, наследующий ```View<{ counter: number }>```. Конструктор и поля аналогичны родительским. Отвечает за отображение счетчика товаров в корзине.
+Класс, наследующий View<{ counter: number }. Отвечает за отображение счетчика товаров в корзине.
+
+Конструктор:
+В конструкторе принимает объект типа IEvents и IController. Описание в родительском классе.
+
+Методы:
+- ```render(data?: { counter: number }): void``` - Отображение счетчика товаров в корзине
 
 ### Класс ProductModalView:
 
-Класс, наследующий ModalView<IProduct>. Конструктор и поля аналогичны родительским. Отвечает за отображение модального окна карточки товара.
+Класс, наследующий ModalView<IProduct>. Отвечает за отображение модального окна карточки товара.
+
+Конструктор:
+В конструкторе принимает объект типа IEvents и IController. Описание в родительском классе.
 
 Поля:
 
@@ -239,41 +337,87 @@ yarn build
 
 Методы:
 
+- ```render(data?: Partial<IProduct>): void ``` - Отвечает за отображение модального окна
+- ```nextModal(): void ``` - Переключает на следующее модальное окно
 - ```private _renderButton(button: HTMLButtonElement, addButtonHandler: () => void, nextModalHandler: () => void): void``` — метод реализации отрабатывающий отрисовку кнопки и ее хендлеры.
 
 ### Класс BasketModalView:
 
-Класс, наследующий ModalView<IBasket>. Конструктор и поля аналогичны родительским. Отвечает за отображение модального окна корзины.
+Класс, наследующий ModalView<IBasket>. Отвечает за отображение модального окна корзины.
+
+Конструктор:
+В конструкторе принимает объект типа IEvents и IController. Описание в родительском классе.
+
+Методы:
+- ```render(): void ``` - Отвечает за отображение модального окна
+- ```nextModal(): void ``` - Переключает на следующее модальное окно
 
 ### Класс DetailsFormModalView:
 
-Класс, наследующий ModalView<void> и реализующий интерфейс IFormView. Конструктор и поля аналогичны родительским. Отвечает за отображение модального окна деталей о заказе.
+Класс, наследующий ModalView<void> и реализующий интерфейс IFormView. Отвечает за отображение модального окна деталей о заказе.
+
+Конструктор:
+В конструкторе принимает объект типа IEvents и IController. Описание в родительском классе.
 
 Методы:
-
+- ```render(): void ``` - Отвечает за отображение модального окна
+- ```nextModal(): void ``` - Переключает на следующее модальное окно
 - ```checkFilled(): void``` — проверяет заполнена ли форма и переключает кнопку
 - ```private _altButtonHandler(buttons: HTMLButtonElement[], toggleElement: number):void```  — реализует механизм выбора одну из двух кнопок
 - ```private _createDetails(): IDetails``` — создает данные о заказе из формы
 
 ### Класс ContactsFormModalView:
 
-Класс, наследующий ModalView<void> и реализующий интерфейс IFormView. Конструктор и поля аналогичны родительским. Отвечает за отображение модального окна с контактной информацией.
+Класс, наследующий ModalView<void> и реализующий интерфейс IFormView. Отвечает за отображение модального окна с контактной информацией.
+
+Конструктор:
+В конструкторе принимает объект типа IEvents и IController. Описание в родительском классе.
 
 Методы:
 
+- ```render(): void ``` - Отвечает за отображение модального окна
+- ```nextModal(): void ``` - Переключает на следующее модальное окно
 - ```checkFilled(): void``` — проверяет заполнена ли форма и переключает кнопку
 - ```private _createContacts(): IContacts```  — создает контактные данные из формы
 
 ### Класс SuccessModalView:
 
-Класс, наследующий ModalView<IOrderResponse>. Конструктор и поля аналогичны родительским. Отвечает за отображение модального окна подтверждения успешного оформления заказа.
+Класс, наследующий ModalView<IOrderResponse>. Отвечает за отображение модального окна подтверждения успешного оформления заказа.
 
+Конструктор:
+В конструкторе принимает объект типа IEvents и IController. Описание в родительском классе.
+
+Методы:
+- ```render(data?: Partial<IOrderResponse>): void``` - Отвечает за отображение модального окна.
+- ```nextModal(): void ``` - Закрывает модальное окно
 
 ## Брокер событий
 ### Класс EventEmitter:
 
-Класс, являющийся реализацией брокера событий. Позволяет отправлять события и реагировать на них. Класс документирован в файле src/components/base/events.ts.
+Класс EventEmitter реализует брокер событий, который используется в слое Модели для управления событиями, связанными 
+с изменением данных и взаимодействием между слоями Модели и Представления. Позволяет подписываться на события, генерировать 
+события и уведомлять о них другие компоненты.
 
+Конструктор:
+```constructor()``` - Инициализирует _events как карту для управления подписками на события.
+
+Поля: 
+- ```_events (Map<EventName, Set>)``` — карта, где ключами являются названия событий (строка или регулярное выражение), 
+а значениями — множества обработчиков событий.
+
+Методы:
+- ```on<T extends object>(eventName: EventName, callback: (event: T) => void): void```
+Добавляет обработчик callback для события eventName.
+- ```off(eventName: EventName, callback: Subscriber): void```
+Удаляет обработчик callback для события eventName. Если у события не осталось подписчиков, оно удаляется.
+- ```emit<T extends object>(eventName: string, data?: T): void```
+Инициирует событие eventName, передавая в него данные data. Вызывает все подписанные обработчики.
+- ```onAll(callback: (event: EmitterEvent) => void): void```
+Добавляет обработчик, который будет вызван для всех событий.
+- ```offAll(): void```
+Удаляет все обработчики для всех событий.
+- ```trigger<T extends object>(eventName: string, context?: Partial<T>): (event: T) => void```
+Создает функцию, которая при вызове инициирует событие eventName с переданными данными context.
 
 ## Описание событий
 
