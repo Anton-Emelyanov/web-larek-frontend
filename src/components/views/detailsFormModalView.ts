@@ -64,11 +64,7 @@ export class DetailsFormModalView extends ModalView<void> implements IFormView {
 		const orderButton = this.element.querySelector(
 			'.order__button'
 		) as HTMLButtonElement;
-		if (input.value !== '' && checkedButton) {
-			orderButton.disabled = false;
-		} else {
-			orderButton.disabled = true;
-		}
+		orderButton.disabled = !(input.value !== '' && checkedButton);
 	}
 
 	private _altButtonHandler(

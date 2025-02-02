@@ -7,7 +7,7 @@ import { IEvents } from '../base/events';
 import { View } from './view';
 
 export class ProductView extends View<IProduct> {
-	private _isCompact: boolean;
+	private readonly _isCompact: boolean;
 
 	constructor(broker: IEvents, controller: IController, isCompact: boolean) {
 		super(broker, controller);

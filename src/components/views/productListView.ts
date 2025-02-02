@@ -7,7 +7,7 @@ import { ProductView } from './productView';
 import { View } from './view';
 
 export class ProductListView extends View<IProduct[]> {
-	private _isCompact: boolean;
+	private readonly _isCompact: boolean;
 
 	constructor(broker: IEvents, controller: IController, isCompact: boolean) {
 		super(broker, controller);
@@ -17,8 +17,7 @@ export class ProductListView extends View<IProduct[]> {
 			this.element = createElement('ul');
 			this.element.classList.add('basket__list');
 		} else {
-			const template = document.querySelector('.gallery') as HTMLElement;
-			this.element = template;
+			this.element = document.querySelector('.gallery') as HTMLElement;
 			this.broker.on(EventType.getProductList, (data: IProduct[]) =>
 				this.render(data)
 			);

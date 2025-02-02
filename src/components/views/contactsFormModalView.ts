@@ -60,11 +60,7 @@ export class ContactsFormModalView
 		const orderButton = this.element.querySelector(
 			'.button'
 		) as HTMLButtonElement;
-		if (inputs.every((input) => input.value !== '')) {
-			orderButton.disabled = false;
-		} else {
-			orderButton.disabled = true;
-		}
+		orderButton.disabled = !inputs.every((input) => input.value !== '');
 	}
 
 	private _createContacts(): IContacts {

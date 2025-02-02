@@ -26,6 +26,8 @@ const detailsView = new DetailsFormModalView(broker, controller);
 const contactsView = new ContactsFormModalView(broker, controller);
 const successView = new SuccessModalView(broker, controller);
 
+
+
 function nextModalSwitcher(modal: AppStateModal) {
 	const detailsModal = document.getElementById('detailsModal');
 	const contactsModal = document.getElementById('contactsModal');

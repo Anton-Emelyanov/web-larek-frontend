@@ -8,7 +8,7 @@ export abstract class View<T> implements IView<T> {
 	protected broker: IEvents;
 	protected controller: IController;
 
-	constructor(broker: IEvents, controller: IController) {
+	protected constructor(broker: IEvents, controller: IController) {
 		this.broker = broker;
 		this.controller = controller;
 	}
@@ -16,7 +16,7 @@ export abstract class View<T> implements IView<T> {
 }
 
 export abstract class ModalView<T> extends View<T> implements IModalView {
-	constructor(broker: IEvents, controller: IController) {
+	protected constructor(broker: IEvents, controller: IController) {
 		super(broker, controller);
 		this.element = document
 			.querySelector('#modal-container')
