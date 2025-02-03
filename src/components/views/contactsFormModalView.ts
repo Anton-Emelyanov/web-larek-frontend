@@ -11,8 +11,8 @@ export class ContactsFormModalView
 {
 	constructor(broker: IEvents, controller: IController) {
 		super(broker, controller);
-		this.element.setAttribute('id', 'contactsModal');
 		this.render();
+		this.element.setAttribute('id', 'contactsModal');
 	}
 
 	render(): void {
@@ -33,16 +33,31 @@ export class ContactsFormModalView
 				form.querySelector('.form__errors').textContent = error.detailsError;
 			}
 		);
+
+		this.broker.on(EventType.contactsError, (error: { contactError: string }) => {
+			orderButton.disabled = true;
+			const errorElement = this.element.querySelector('.form__errors');
+			if (errorElement) {
+					errorElement.textContent = error.contactError;
+			}
+		});
+
+
 		orderButton.addEventListener('click', (e) => {
 			e.preventDefault();
 			const contacts = this._createContacts();
-			this.controller.fillContacts(contacts);
-			if (this.controller.validateContacts(contacts)) {
-				this.controller.createOrder();
-				this.controller.clearBasket();
-				this.nextModal();
+
+			if (!this.controller.validateContacts(contacts)) {
+					this.controller.fillContacts(contacts);
+					return;
 			}
+
+			this.controller.fillContacts(contacts);
+			this.controller.createOrder();
+			this.controller.clearBasket();
+			this.nextModal();
 		});
+
 
 		this.element.querySelector('.modal__content').appendChild(form);
 	}
@@ -53,15 +68,18 @@ export class ContactsFormModalView
 	}
 
 	checkFilled(): void {
-		this.element.querySelector('.form__errors').textContent = '';
-		const inputs = Array.from(
-			this.element.querySelectorAll('.form__input')
-		) as HTMLInputElement[];
-		const orderButton = this.element.querySelector(
-			'.button'
-		) as HTMLButtonElement;
-		orderButton.disabled = !inputs.every((input) => input.value !== '');
+		const errorElement = this.element.querySelector('.form__errors');
+		if (errorElement) {
+				errorElement.textContent = 'Введите корректные данные';
+		}
+
+    const inputs = Array.from(
+        this.element.querySelectorAll('.form__input')
+    ) as HTMLInputElement[];
+    const orderButton = this.element.querySelector('.button') as HTMLButtonElement;
+    orderButton.disabled = !inputs.every((input) => input.value.trim() !== '');
 	}
+
 
 	private _createContacts(): IContacts {
 		const inputs = Array.from(

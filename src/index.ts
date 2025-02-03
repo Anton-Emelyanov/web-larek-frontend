@@ -29,17 +29,15 @@ const successView = new SuccessModalView(broker, controller);
 
 
 function nextModalSwitcher(modal: AppStateModal) {
-	const detailsModal = document.getElementById('detailsModal');
-	const contactsModal = document.getElementById('contactsModal');
-	const successModal = document.getElementById('successModal');
 	if (modal === AppStateModal.details) {
-		detailsModal.classList.add('modal_active');
+		detailsView.openModal();
 	} else if (modal === AppStateModal.contacts) {
-		contactsModal.classList.add('modal_active');
+		contactsView.openModal();
 	} else if (modal === AppStateModal.success) {
-		successModal.classList.add('modal_active');
+		successView.openModal();
 	}
 }
+
 
 broker.on(EventType.nextModal, (data: { modal: AppStateModal }) =>
 	nextModalSwitcher(data.modal)

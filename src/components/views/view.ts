@@ -16,29 +16,39 @@ export abstract class View<T> implements IView<T> {
 }
 
 export abstract class ModalView<T> extends View<T> implements IModalView {
+	protected modalCloseButton: HTMLElement;
+	protected pageWrapper: HTMLElement;
+
 	protected constructor(broker: IEvents, controller: IController) {
 		super(broker, controller);
 		this.element = document
 			.querySelector('#modal-container')
 			.cloneNode(true) as HTMLElement;
-		this.element
-			.querySelector('.modal__close')
-			.addEventListener('click', () => this.closeModal());
+
+		this.modalCloseButton = this.element.querySelector('.modal__close');
+		this.pageWrapper = document.querySelector('.page__wrapper');
+
+		this.modalCloseButton.addEventListener('click', () => this.closeModal());
 		this.element.addEventListener('click', (e) => {
 			if (e.target === this.element) {
 				this.closeModal();
 			}
 		});
-		this.broker.on(EventType.closeModal, () =>
-			this.element.classList.remove('modal_active')
-		);
+		this.broker.on(EventType.closeModal, () => this.closeModal());
+
 		document.querySelector('.page').appendChild(this.element);
 	}
-	abstract nextModal(): void;
+
+	openModal(): void {
+		this.element.classList.add('modal_active');
+		this.pageWrapper.classList.add('page__wrapper_locked');
+	}
+
 	closeModal(): void {
 		this.controller.setModal(AppStateModal.none);
-		document
-			.querySelector('.page__wrapper')
-			.classList.remove('page__wrapper_locked');
+		this.element.classList.remove('modal_active');
+		this.pageWrapper.classList.remove('page__wrapper_locked');
 	}
+
+	abstract nextModal(): void;
 }

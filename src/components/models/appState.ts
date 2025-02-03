@@ -129,4 +129,9 @@ export class AppState implements IAppState {
 	getBasket(): IBasket {
 		return this._basket;
 	}
+
+	getCurrentModal(): AppStateModal {
+		return this._openedModal;
+	}
+
 }

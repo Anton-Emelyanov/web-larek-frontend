@@ -19,19 +19,28 @@ export class Controller implements IController {
 	}
 
 	async loadProductList(): Promise<void> {
-		const productList = this._api.getProductList();
-		this._state.updateProductList((await productList).items);
+		try {
+			const productList = await this._api.getProductList();
+			this._state.updateProductList(productList.items);
+		} catch (error) {
+			console.error('Ошибка загрузки:', error);
+		}
 	}
 
 	async createOrder(): Promise<void> {
-		const order = this._state.getOrder();
-		this._state.updateOrderResponse(await this._api.createOrder(order));
+		try {
+			const order = this._state.getOrder();
+			const response = await this._api.createOrder(order);
+			this._state.updateOrderResponse(response);
+		} catch (error) {
+			console.error('Ошибка загрузки:', error);
+		}
 	}
 
 	selectProduct(id: string): void {
 		const product = this._findProduct(id);
 		this._state.updateSelectedProduct(product);
-		this._state.updateOpenedModal(AppStateModal.card);
+		this.setModal(AppStateModal.card);
 	}
 
 	addProduct(id: string): void {
@@ -87,11 +96,11 @@ export class Controller implements IController {
 	}
 
 	validateContacts(contacts: Partial<IContacts>): boolean {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 		return (
-			contacts.email !== undefined &&
-			contacts.email !== '' &&
-			contacts.phone !== undefined &&
-			contacts.phone !== ''
+			emailRegex.test(contacts.email || '') &&
+			phoneRegex.test(contacts.phone || '')
 		);
 	}
 
@@ -104,6 +113,7 @@ export class Controller implements IController {
 	}
 
 	setModal(modal: AppStateModal): void {
+		if (this._state.getCurrentModal() === modal) return; // Проверяем, изменилось ли состояние
 		this._state.updateOpenedModal(modal);
 	}
 

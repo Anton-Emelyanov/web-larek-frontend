@@ -42,4 +42,5 @@ export interface IAppState {
 	getOrder(): IOrder;
 	getProductList(): IProduct[];
 	getBasket(): IBasket;
+	getCurrentModal(): AppStateModal;
 }

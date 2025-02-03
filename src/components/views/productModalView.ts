@@ -17,10 +17,7 @@ export class ProductModalView extends ModalView<IProduct> {
 			(data: { product: IProduct; inBasket: boolean }) => {
 				this._inBasket = data.inBasket;
 				this.render(data.product);
-				this.element.classList.add('modal_active');
-				document
-					.querySelector('.page__wrapper')
-					.classList.add('page__wrapper_locked');
+				this.openModal();
 			}
 		);
 	}
@@ -57,18 +54,24 @@ export class ProductModalView extends ModalView<IProduct> {
 	}
 
 	private _renderButton(
-		button: HTMLButtonElement,
-		addButtonHandler: () => void,
-		nextModalHandler: () => void
+    button: HTMLButtonElement,
+    addButtonHandler: () => void,
+    nextModalHandler: () => void
 	): void {
-		if (this._inBasket) {
-			button.textContent = 'В корзину';
-			button.removeEventListener('click', addButtonHandler);
-			button.addEventListener('click', nextModalHandler);
-		} else {
-			button.textContent = 'Купить';
-			button.removeEventListener('click', nextModalHandler);
-			button.addEventListener('click', addButtonHandler);
-		}
+			if (this._inBasket) {
+					button.textContent = 'В корзину';
+					button.removeEventListener('click', addButtonHandler);
+					button.addEventListener('click', nextModalHandler);
+					button.disabled = false;
+			} else if (button.closest('.card').querySelector('.card__price')?.textContent === 'Бесценно') {
+					button.textContent = 'Купить';
+					button.disabled = true;
+			} else {
+					button.textContent = 'Купить';
+					button.removeEventListener('click', nextModalHandler);
+					button.addEventListener('click', addButtonHandler);
+					button.disabled = false;
+			}
 	}
+
 }
